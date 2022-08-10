@@ -1,6 +1,4 @@
-// const data = require('./../../database/users');
-const fs = require('fs');
-const data = '/Users/jennaemoon/Codesmith/Solo Project/database/users.txt';
+const User = require('../models/userModel');
 
 const userController = {};
 
@@ -11,27 +9,37 @@ userController.getAllUsers = (req, res, next) => {
 
 //add user's id and password into database
 userController.createUser = (req, res, next) => {
-  console.log(req.body);
-  fs.readFile(data, 'utf8', (err, data) =>{
-    console.log(JSON.parse(data));
-    if (err) console.log(err);
-  });
-  // const content = JSON.stringify(req.body);
-  // fs.writeFile(data, content, err => {
-  //   if (err) {
-  //     console.log(err);
-  //     return;
-  //   }
-  // })
-  return next();
-
+  User.create(req.body)
+    .then(data => {
+      // res.locals.userId = data._id.toString();
+      res.locals.todo = data.todo;
+      return next();
+    })
+    .catch(err => next(err));
 };
 
 //obtain username and password from the request body,
 // locate the appropriate user in the database,
 // and then authenticate the submitted password against the password stored in the database.
 userController.verifyUser = (req, res, next) => {
+  const {
+    username,
+    password
+  } = req.body;
 
+  User.findOne({username}).exec()
+    .then((data) => {
+      if (data === null) return res.redirect('/signup');
+      data.comparePassword(password, function(err, result){
+        if (result) {
+          // res.locals.userId = data._id.toString();
+          res.locals.todo = data.todo;
+          return next();
+        }
+      })
+    }).catch((err) => {
+      return next(err);
+    });
 };
 
 module.exports = userController;
