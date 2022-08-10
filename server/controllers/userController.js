@@ -1,62 +1,37 @@
-const User = require('../models/userModel');
+// const data = require('./../../database/users');
+const fs = require('fs');
+const data = '/Users/jennaemoon/Codesmith/Solo Project/database/users.txt';
 
 const userController = {};
 
-/**
-* getAllUsers - retrieve all users from the database and stores it into res.locals
-* before moving on to next middleware.
-*/
+//retrieve all users from the database and store it into res.locals
 userController.getAllUsers = (req, res, next) => {
-  User.find({}, (err, users) => {
-    // if a database error occurs, call next with the error message passed in
-    // for the express global error handler to catch
-    if (err) return next('Error in userController.getAllUsers: ' + JSON.stringify(err));
-    
-    // store retrieved users into res.locals and move on to next middleware
-    res.locals.users = users;
-    return next();
-  });
+
 };
 
-/**
-* createUser - create and save a new User into the database.
-*/
+//add user's id and password into database
 userController.createUser = (req, res, next) => {
-  // write code here
-  if (typeof (req.body.username) === 'string' && typeof (req.body.password) === 'string') {
-    User.create(req.body)
-      .then(data => {
-        res.locals.userId = data._id.toString();
-        next();
-      })
-      .catch(err => next(err))
-  }
+  console.log(req.body);
+  fs.readFile(data, 'utf8', (err, data) =>{
+    console.log(JSON.parse(data));
+    if (err) console.log(err);
+  });
+  // const content = JSON.stringify(req.body);
+  // fs.writeFile(data, content, err => {
+  //   if (err) {
+  //     console.log(err);
+  //     return;
+  //   }
+  // })
+  return next();
+
 };
 
-/**
-* verifyUser - Obtain username and password from the request body, locate
-* the appropriate user in the database, and then authenticate the submitted password
-* against the password stored in the database.
-*/
+//obtain username and password from the request body,
+// locate the appropriate user in the database,
+// and then authenticate the submitted password against the password stored in the database.
 userController.verifyUser = (req, res, next) => {
-  // write code here
-  const {
-    username,
-    password
-  } = req.body;
 
-  User.findOne({username}).exec()
-    .then((data) => {
-      if (data === null) return res.redirect('/signup');
-      data.comparePassword(password, function(err, result){
-        if (result) {
-          res.locals.userId = data._id.toString();
-          return next();
-        }
-      })
-    }).catch((err) => {
-      return next(err);
-    });
 };
 
 module.exports = userController;
