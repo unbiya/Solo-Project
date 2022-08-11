@@ -1,5 +1,5 @@
 {
-  "name": "unit-11-authentication",
+  "name": "my-to-do-list",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,14 +9,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/CodesmithLLC/unit-11-authentication.git"
+    "url": "git+https://github.com/unbiya/Solo-Project.git"
   },
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/CodesmithLLC/unit-11-authentication/issues"
-  },
-  "homepage": "https://github.com/CodesmithLLC/unit-11-authentication#readme",
   "dependencies": {
     "bcrypt": "^5.0.1",
     "bcryptjs": "^2.3.0",

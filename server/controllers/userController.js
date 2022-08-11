@@ -3,15 +3,26 @@ const User = require('../models/userModel');
 const userController = {};
 
 //retrieve all users from the database and store it into res.locals
-userController.getAllUsers = (req, res, next) => {
-
+userController.getTodos = (req, res, next) => {
+  const username = req.cookies.ssid
+  if (username) {
+    User.findOne({username})
+      .then(data => {
+        if (data === null) return res.direct('/signup');
+        res.locals.todo = data.todo;
+        return next();
+      })
+      .catch(err => next(err))
+  } else {
+    return res.direct('/signup');
+  }
 };
 
 //add user's id and password into database
 userController.createUser = (req, res, next) => {
   User.create(req.body)
     .then(data => {
-      // res.locals.userId = data._id.toString();
+      res.locals.username = data.username.toString();
       res.locals.todo = data.todo;
       return next();
     })
@@ -32,7 +43,7 @@ userController.verifyUser = (req, res, next) => {
       if (data === null) return res.redirect('/signup');
       data.comparePassword(password, function(err, result){
         if (result) {
-          // res.locals.userId = data._id.toString();
+          res.locals.username = data.username.toString();
           res.locals.todo = data.todo;
           return next();
         }

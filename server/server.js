@@ -1,8 +1,11 @@
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 
 const userController = require('./controllers/userController');
+const cookieController = require('./controllers/cookieController');
+// const sessionController = require('./controllers/sessionController');
 
 const PORT = 3000;
 
@@ -14,13 +17,20 @@ mongoose.connect(mongoURI)
   .catch(err => console.log(err));
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); //idk what this is
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+app.use('/client', express.static(path.resolve(__dirname, '../client')));
 
 
 //root
 app.get('/', (req, res) => {
   res.sendFile(path.resolve(__dirname, '../client/index.html'));
 });
+
+app.get('/style.css', (req, res) => {
+  return res.status(200).sendFile(path.resolve(__dirname, '../client/style.css'))
+})
 
 
 //create an account
@@ -30,6 +40,8 @@ app.get('/signup', (req, res) => {
 
 app.post('/signup',
   userController.createUser,
+  cookieController.setSSIDCookie,
+  // sessionController.startSession,
   (req, res)=> {
     res.redirect('/todo');
   });
@@ -38,12 +50,19 @@ app.post('/signup',
 //log-in
 app.post('/login',
   userController.verifyUser,
+  cookieController.setSSIDCookie,
+  // sessionController.startSession,
   (req, res) => {
     res.redirect('/todo');
-
 });
 
+
 //to-do list page
+app.get('/todo',
+  userController.getTodos,
+  (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../client/todo.html'));
+});
 
 
 //404 handler
