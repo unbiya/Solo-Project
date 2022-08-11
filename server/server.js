@@ -5,7 +5,7 @@ const cookieParser = require('cookie-parser');
 
 const userController = require('./controllers/userController');
 const cookieController = require('./controllers/cookieController');
-// const sessionController = require('./controllers/sessionController');
+const todoController = require('./controllers/todoController');
 
 const PORT = 3000;
 
@@ -62,6 +62,12 @@ app.get('/todo',
   userController.getTodos,
   (req, res) => {
     res.sendFile(path.resolve(__dirname, '../client/todo.html'));
+});
+
+app.post('/todo',
+  todoController.add,
+  (req, res) => {
+    res.send(res.locals.todo);
 });
 
 
