@@ -1,15 +1,20 @@
 const User = require('../models/userModel');
+const bcrypt = require('bcrypt');
+
+const SALT_WORK_FACTOR = 10;
 
 const userController = {};
 
 //retrieve all users from the database and store it into res.locals
 userController.getTodos = (req, res, next) => {
   const username = req.cookies.ssid
+
   if (username) {
     User.findOne({username})
       .then(data => {
         if (data === null) return res.direct('/signup');
         res.locals.todo = data.todo;
+        console.log(typeof res.locals.todo)
         return next();
       })
       .catch(err => next(err))
@@ -20,13 +25,24 @@ userController.getTodos = (req, res, next) => {
 
 //add user's id and password into database
 userController.createUser = (req, res, next) => {
-  User.create(req.body)
-    .then(data => {
-      res.locals.username = data.username.toString();
-      res.locals.todo = data.todo;
-      return next();
-    })
-    .catch(err => next(err));
+  let {
+    username,
+    password,
+  } = req.body;
+
+  bcrypt.hash(password, SALT_WORK_FACTOR, (err, hash) => {
+    if (err) return next(err);
+    password = hash;
+    console.log(password)
+    User.create({username, password})
+      .then(data => {
+        res.locals.username = data.username.toString();
+        res.locals.todo = data.todo;
+        return next();
+      })
+      .catch(err => next(err));
+  })
+  
 };
 
 //obtain username and password from the request body,
@@ -35,18 +51,19 @@ userController.createUser = (req, res, next) => {
 userController.verifyUser = (req, res, next) => {
   const {
     username,
-    password
+    password,
   } = req.body;
 
   User.findOne({username}).exec()
     .then((data) => {
       if (data === null) return res.redirect('/signup');
+      // console.log(data)
       data.comparePassword(password, function(err, result){
         if (result) {
           res.locals.username = data.username.toString();
           res.locals.todo = data.todo;
           return next();
-        }
+        } else {console.log('failed comparing password')}
       })
     }).catch((err) => {
       return next(err);

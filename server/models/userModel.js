@@ -11,16 +11,15 @@ const userSchema = new Schema({
     task: String,
     active: Boolean
   }]
-  // todo: {type: Object, default: {}, required: true}
 });
 
-userSchema.pre('save', function(next) {
-  bcrypt.hash(this.password, SALT_WORK_FACTOR, (err, hash) => {
-    if (err) return next(err);
-    this.password = hash;
-    next();
-  })
-})
+// userSchema.pre('save', function(next) {
+//   bcrypt.hash(this.password, SALT_WORK_FACTOR, (err, hash) => {
+//     if (err) return next(err);
+//     this.password = hash;
+//     next();
+//   })
+// })
 
 userSchema.methods.comparePassword = function (password, cb) {
   bcrypt.compare(password, this.password, function (err, isMatch) {

@@ -1,13 +1,17 @@
-// const secrets = document.querySelector('#secrets');
+const todoList = document.querySelector('.todo-list js-todo-list');
 
 fetch('/todo')
-  .then((res) => console.log(res))
-  // .then((data) => {
-  //   console.log(data);
-    // const users = data.users;
-    // users.forEach((user) => {
-    //   const userListItem = document.createElement('li');
-    //   userListItem.appendChild(document.createTextNode(`${user.username}: ${user.password}`));
-    //   secrets.appendChild(userListItem);
-    // });
-  // });
+  .then((res) => {
+    console.log(res)
+    console.log(res.json())
+    return res.json();
+  })
+  .then((data) => {
+    // console.log(data);
+    const tasksArr = data;
+    tasksArr.forEach((obj) => {
+      const taskListItem = document.createElement('li');
+      taskListItem.appendChild(document.createTextNode(`${obj.task}`));
+      todoList.appendChild(taskListItem);
+    })
+  });

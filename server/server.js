@@ -41,7 +41,6 @@ app.get('/signup', (req, res) => {
 app.post('/signup',
   userController.createUser,
   cookieController.setSSIDCookie,
-  // sessionController.startSession,
   (req, res)=> {
     res.redirect('/todo');
   });
@@ -51,7 +50,6 @@ app.post('/signup',
 app.post('/login',
   userController.verifyUser,
   cookieController.setSSIDCookie,
-  // sessionController.startSession,
   (req, res) => {
     res.redirect('/todo');
 });
@@ -59,10 +57,16 @@ app.post('/login',
 
 //to-do list page
 app.get('/todo',
-  userController.getTodos,
   (req, res) => {
     res.sendFile(path.resolve(__dirname, '../client/todo.html'));
 });
+
+app.get('/todo',
+  userController.getTodos,
+  (req, res) => {
+    // console.log(res)
+    return res.send(res.locals.todo);
+  })
 
 app.post('/todo',
   todoController.add,
