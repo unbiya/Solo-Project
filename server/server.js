@@ -71,7 +71,8 @@ app.get('/todo/ls',
 app.post('/todo',
   todoController.add,
   (req, res) => {
-    res.send(res.locals.todo);
+    res.redirect('/todo')
+    // res.send(res.locals.todo);
 });
 
 
