@@ -14,7 +14,6 @@ userController.getTodos = (req, res, next) => {
       .then(data => {
         if (data === null) return res.direct('/signup');
         res.locals.todo = data.todo;
-        console.log(typeof res.locals.todo)
         return next();
       })
       .catch(err => next(err))
@@ -33,7 +32,6 @@ userController.createUser = (req, res, next) => {
   bcrypt.hash(password, SALT_WORK_FACTOR, (err, hash) => {
     if (err) return next(err);
     password = hash;
-    console.log(password)
     User.create({username, password})
       .then(data => {
         res.locals.username = data.username.toString();
